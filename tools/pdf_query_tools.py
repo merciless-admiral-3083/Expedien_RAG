@@ -18,7 +18,6 @@ def get_llm_model(use_ollama=False, ollama_model="llama3.1:8b"):
     Get the appropriate LLM model based on configuration
     """
     if use_ollama:
-        # Support Docker OLLAMA or local OLLAMA
         base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
         return ChatOllama(
             model=ollama_model,
