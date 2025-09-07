@@ -20,13 +20,13 @@ if ENVs.get("HUGGINGFACE_API_KEY"):
 
 # Configure Streamlit
 st.set_page_config(
-    page_title="Nyaya-GPT👩‍⚖️",
+    page_title="VerdictAI",
     page_icon="⚖️",
     layout="centered",
     initial_sidebar_state="expanded",
 )
 
-st.title("Nyaya-GPT⚖️")
+st.title("VerdictAI⚖️")
 
 # Sidebar for LLM selection
 with st.sidebar:
@@ -76,11 +76,8 @@ with st.sidebar:
 
 # Main content
 initial_msg = """
-#### Welcome!!! I am your legal assistant chatbot👩‍⚖️
-#### You can ask me any queries about the laws or constitution of India
-> **NOTE:** Currently I have access to the Bharatiya Nyaya Sanhita (BNS) and the Indian Constitution. Try to ask relevant queries only😇
-
-> **NEW:** You can now choose between cloud-based Groq or local OLLAMA models in the sidebar!
+#### A Chatbot for all your Legal Queries👩‍⚖️
+#### You can ask anything regarding the laws or constitution of India
 """
 st.markdown(initial_msg)
 
@@ -100,7 +97,7 @@ for message in store:
         st.markdown(message.content)
 
 # Chat input
-if prompt := st.chat_input("What is your query?"):
+if prompt := st.chat_input("What's your query?"):
     # Display user message
     st.chat_message("user", avatar="🗨️").markdown(prompt)
     
@@ -143,7 +140,7 @@ st.markdown("---")
 st.markdown(
     """
     <div style='text-align: center; color: gray; font-size: 12px;'>
-        💡 Tip: Use OLLAMA for unlimited local processing or Groq for faster cloud-based responses
+        💡 Thank you for using VerdictAI!
     </div>
     """, 
     unsafe_allow_html=True

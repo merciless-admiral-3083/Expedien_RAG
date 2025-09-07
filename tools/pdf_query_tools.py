@@ -177,7 +177,7 @@ def indian_constitution_pdf_query_with_qa(query: str) -> str:
         return result
     except Exception as e:
         # Fallback to simple retrieval if QA chain fails
-        return str(docs)
+        return "\n".join([d.page_content for d in docs])
 
 
 @tool

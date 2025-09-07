@@ -39,7 +39,13 @@ def agent(query: str, use_ollama: bool = False, ollama_model: str = "llama3.1:8b
         LLM = ChatGroq(model="llama3-8b-8192")
         print("Using Groq model: llama3-8b-8192")
 
-    tools = [indian_constitution_pdf_query, indian_laws_pdf_query]
+    from tools.pdf_query_tools import (
+    indian_constitution_pdf_query_with_qa,
+    indian_laws_pdf_query_with_qa,
+    )
+
+    tools = [indian_constitution_pdf_query_with_qa, indian_laws_pdf_query_with_qa]
+
     prompt_template = get_prompt_template()
 
     agent = create_react_agent(
