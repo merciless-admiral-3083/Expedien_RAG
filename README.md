@@ -1,16 +1,17 @@
-# CrewAI Financial Daily Summary
+# VerdictAI ⚖️ - RAG-Based Legal Chatbot
 
-A comprehensive financial news aggregation and summarization system that automatically collects, processes, and distributes daily market summaries in multiple languages. This project implements a CrewAI-style agent workflow powered by **Groq's high-performance Language Processing Units (LPUs)** to create professional PDF reports with real-time financial data.
+A sophisticated AI-powered legal assistant that provides accurate answers about Indian laws and constitutional provisions using Retrieval-Augmented Generation (RAG) technology. Built with LangChain, Groq, and Streamlit, it offers both cloud and local LLM options for maximum flexibility.
 
 ## 🚀 Features
 
-- **High-Speed AI Processing**: Leverages Groq's LPUs for ultra-fast inference (100+ tokens/second)
-- **Automated News Collection**: Fetches real-time US financial news using Serper and Tavily search APIs
-- **AI-Powered Summarization**: Generates concise, professional summaries using Groq's language models
-- **Multi-Language Support**: Translates summaries into Arabic, Hindi, and Hebrew
-- **Professional PDF Generation**: Creates formatted PDF reports with embedded images
-- **Telegram Integration**: Automatically sends reports to Telegram channels
-- **Modular Agent Architecture**: Clean separation of concerns with dedicated agents for each task
+- **🤖 Dual LLM Support**: Choose between Groq (cloud) or OLLAMA (local) for AI processing
+- **📚 Comprehensive Legal Database**: Access to Indian Constitution and Bharatiya Nyaya Sanhita (BNS) 2023
+- **🔍 Semantic Search**: Advanced RAG implementation with FAISS vector database
+- **💬 Interactive Chat Interface**: Clean, user-friendly Streamlit web interface
+- **⚡ High Performance**: Optimized for fast responses with proper timeouts and error handling
+- **🔄 Fallback Mechanisms**: Graceful degradation when services are unavailable
+- **🐳 Docker Support**: Easy deployment with Docker and Docker Compose
+- **📱 Real-time Model Switching**: Switch between different LLM providers on the fly
 
 ## 📋 Table of Contents
 
@@ -19,8 +20,7 @@ A comprehensive financial news aggregation and summarization system that automat
 - [Usage](#usage)
 - [Architecture](#architecture)
 - [API Requirements](#api-requirements)
-- [Groq Integration](#groq-integration)
-- [Output](#output)
+- [Docker Deployment](#docker-deployment)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -30,133 +30,147 @@ A comprehensive financial news aggregation and summarization system that automat
 ### Prerequisites
 
 - Python 3.8 or higher
-- API keys for required services (see [API Requirements](#api-requirements))
+- Git
+- Docker (optional, for containerized deployment)
 
-### Install Dependencies
+### Local Installation
 
-```bash
-pip install -r requirements.txt
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd RAG-Based-Chatbot/Chatbot
+   ```
 
-### Additional Dependencies
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-For the financial summary script specifically, you may need:
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-pip install crewai litellm requests python-telegram-bot==13.15 reportlab Pillow PyPDF2 groq langchain-groq
-```
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env  # Create .env file
+   # Edit .env with your API keys
+   ```
 
 ## ⚙️ Configuration
 
 ### Environment Variables
 
-Set the following environment variables in your `.env` file or system environment:
+Create a `.env` file in the project root:
 
 ```bash
 # Groq Configuration (Primary LLM Provider)
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=your_groq_api_key_here
 
-# Search APIs (choose one or both)
-SERPER_API_KEY=your_serper_api_key
-TAVILY_API_KEY=your_tavily_api_key
+# HuggingFace Configuration (for embeddings)
+HUGGINGFACE_API_KEY=your_huggingface_api_key_here
 
-# LLM Configuration (Fallback)
-LITELLM_API_KEY=your_litellm_api_key
-LLM_MODEL=gpt-4o-mini  # Optional, defaults to gpt-4o-mini
-
-# Telegram Integration (optional)
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-TELEGRAM_CHANNEL_ID=your_telegram_channel_id
+# OLLAMA Configuration (Optional - for local LLM)
+USE_OLLAMA=false
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3.1:8b
 ```
 
 ### API Keys Setup
 
-1. **Groq API**: Sign up at [console.groq.com](https://console.groq.com) for high-speed LLM access
-2. **Serper API**: Sign up at [serper.dev](https://serper.dev) for Google search API access
-3. **Tavily API**: Get API key from [tavily.com](https://tavily.com) for enhanced search
-4. **LiteLLM**: Configure with your preferred LLM provider (OpenAI, Anthropic, etc.) as fallback
-5. **Telegram Bot**: Create a bot via [@BotFather](https://t.me/botfather) and get channel ID
+1. **Groq API**: 
+   - Sign up at [console.groq.com](https://console.groq.com)
+   - Get your API key from the dashboard
+   - Free tier: 14,400 requests/day
+
+2. **HuggingFace API** (Optional):
+   - Sign up at [huggingface.co](https://huggingface.co)
+   - Get your API token from settings
+   - Used for downloading embedding models
+
+3. **OLLAMA** (Optional - for local deployment):
+   - Install OLLAMA from [ollama.ai](https://ollama.ai)
+   - Pull models: `ollama pull llama3.1:8b`
 
 ## 🚀 Usage
 
-### Basic Usage
+### Running the Application
 
-Run the financial daily summary:
+1. **Start the Streamlit app**
+   ```bash
+   streamlit run app.py
+   ```
 
-```bash
-python crew_ai_financial_daily_summary.py --run
-```
+2. **Access the application**
+   - Open your browser to `http://localhost:8501`
+   - Choose your preferred LLM provider in the sidebar
+   - Start asking legal questions!
 
-### Command Line Options
+### Example Queries
 
-```bash
-# Run the complete workflow
-python crew_ai_financial_daily_summary.py --run
-
-# Check configuration (without running)
-python crew_ai_financial_daily_summary.py
-```
-
-### Programmatic Usage
-
-```python
-from crew_ai_financial_daily_summary import crewai_flow_run
-
-# Run the complete workflow
-success = crewai_flow_run()
-if success:
-    print("Daily summary generated successfully!")
-```
+- "What are the fundamental rights in the Indian Constitution?"
+- "Explain the punishment for theft under BNS 2023"
+- "What is the procedure for filing a case in court?"
+- "What are the duties of a citizen according to the Constitution?"
 
 ## 🏗 Architecture
 
-The system implements a multi-agent workflow inspired by CrewAI, optimized for Groq's high-speed processing:
-
-### Agent Workflow
+### System Overview
 
 ```mermaid
 graph TD
-    A[Search Agent] --> B[Summary Agent]
-    B --> C[Image Selection]
-    C --> D[Translation Agent]
-    D --> E[PDF Generation]
-    E --> F[Telegram Distribution]
-    
-    G[Groq LPU] --> B
-    G --> D
+    A[User Query] --> B[Streamlit UI]
+    B --> C[Agent Executor]
+    C --> D{LLM Provider}
+    D -->|Cloud| E[Groq API]
+    D -->|Local| F[OLLAMA]
+    C --> G[PDF Query Tools]
+    G --> H[FAISS Vector DB]
+    H --> I[Constitution PDF]
+    H --> J[BNS PDF]
+    G --> K[Semantic Search]
+    K --> L[Document Retrieval]
+    L --> M[LLM Processing]
+    M --> N[Response Generation]
+    N --> B
 ```
 
-### Agent Responsibilities
+### Core Components
 
-1. **Search Agent** (`search_agent_us_financial_news`)
-   - Queries multiple search APIs (Serper, Tavily)
-   - Deduplicates results
-   - Focuses on US financial markets and recent news
+1. **Frontend (Streamlit)**
+   - Interactive chat interface
+   - LLM provider selection
+   - Real-time model switching
 
-2. **Summary Agent** (`summary_agent_generate`)
-   - Processes search results using Groq's fast inference
-   - Generates concise, professional summaries
-   - Maintains factual accuracy
+2. **Agent System (LangChain)**
+   - ReAct agent with tool integration
+   - Error handling and fallback mechanisms
+   - Timeout and iteration limits
 
-3. **Image Selection** (`select_images_from_results`)
-   - Extracts relevant images from search results
-   - Provides fallback placeholder images
-   - Optimizes for PDF layout
+3. **RAG Pipeline**
+   - PDF document processing
+   - Text chunking and embedding
+   - FAISS vector database
+   - Semantic search and retrieval
 
-4. **Translation Agent** (`translating_agent_translate`)
-   - Translates summaries to multiple languages using Groq
-   - Preserves formatting and structure
-   - Supports Arabic, Hindi, and Hebrew
+4. **LLM Integration**
+   - Groq (cloud-based, high-speed)
+   - OLLAMA (local deployment)
+   - Automatic fallback between providers
 
-5. **PDF Generation** (`create_pdf`)
-   - Creates professional PDF layouts
-   - Embeds images and formatted text
-   - Handles multi-language content
+### Document Processing Flow
 
-6. **Distribution Agent** (`send_to_telegram`)
-   - Sends PDF reports to Telegram channels
-   - Includes captions and metadata
-   - Handles delivery confirmations
+```mermaid
+graph LR
+    A[PDF Documents] --> B[Text Extraction]
+    B --> C[Text Chunking]
+    C --> D[Embedding Generation]
+    D --> E[FAISS Index]
+    E --> F[Vector Search]
+    F --> G[Document Retrieval]
+    G --> H[LLM Processing]
+```
 
 ## 🔌 API Requirements
 
@@ -165,141 +179,88 @@ graph TD
 | Service | Purpose | Free Tier | Documentation |
 |---------|---------|-----------|---------------|
 | **Groq** | **Primary LLM provider** | **14,400 requests/day** | [console.groq.com](https://console.groq.com) |
-| Serper | Web search | 2,500 queries/month | [serper.dev](https://serper.dev) |
 
 ### Optional APIs
 
 | Service | Purpose | Free Tier | Documentation |
 |---------|---------|-----------|---------------|
-| Tavily | Enhanced search | 1,000 queries/month | [tavily.com](https://tavily.com) |
-| LiteLLM | Fallback LLM access | Varies by provider | [litellm.ai](https://litellm.ai) |
-| Telegram Bot API | Distribution | Free | [core.telegram.org](https://core.telegram.org/bots) |
+| HuggingFace | Embedding models | Free | [huggingface.co](https://huggingface.co) |
+| OLLAMA | Local LLM deployment | Free | [ollama.ai](https://ollama.ai) |
 
-## ⚡ Groq Integration
+### Current Supported Models
 
-### Why Groq?
+| Provider | Model | Context Length | Best For |
+|----------|-------|----------------|----------|
+| **Groq** | `llama-3.3-70b-versatile` | 8,192 tokens | High-quality reasoning |
+| **Groq** | `mixtral-8x7b-32768` | 32,768 tokens | Long context, multilingual |
+| **OLLAMA** | `llama3.1:8b` | 8,192 tokens | Local deployment |
+| **OLLAMA** | `mistral:7b` | 8,192 tokens | Fast local inference |
 
-- **Ultra-Fast Inference**: 100+ tokens per second processing speed
-- **Cost-Effective**: Generous free tier with 14,400 requests per day
-- **High-Quality Models**: Access to Llama 3, Mixtral, and other state-of-the-art models
-- **Low Latency**: Optimized for real-time applications
+## 🐳 Docker Deployment
 
-### Current Groq Models
+### Using Docker Compose (Recommended)
 
-**⚠️ Important**: The `llama3-8b-8192` model has been decommissioned. Use these current models:
-
-| Model | Context Length | Best For | Speed |
-|-------|----------------|----------|-------|
-| `llama-3.3-70b-versatile` | 8,192 tokens | High-quality reasoning | Fast |
-| `llama3-70b-8192` | 8,192 tokens | **DEPRECATED** | N/A |
-| `llama3-8b-8192` | 8,192 tokens | **DEPRECATED** | N/A |
-| `mixtral-8x7b-32768` | 32,768 tokens | Long context, multilingual | Very Fast |
-| `gemma-7b-it` | 8,192 tokens | General purpose | Very Fast |
-
-### Groq Configuration Example
-
-```python
-from langchain_groq import ChatGroq
-
-# Update your agent.py to use current models
-LLM = ChatGroq(
-    model="llama-3.3-70b-versatile",  # or "mixtral-8x7b-32768"
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    temperature=0.0
-)
-```
-
-### Model Migration Guide
-
-If you're currently using the deprecated `llama3-8b-8192` model:
-
-1. **Update your code**:
-   ```python
-   # Old (deprecated)
-   LLM = ChatGroq(model="llama3-8b-8192")
-   
-   # New (recommended)
-   LLM = ChatGroq(model="llama-3.3-70b-versatile")  # Better quality
-   # or
-   LLM = ChatGroq(model="mixtral-8x7b-32768")  # Longer context
-   ```
-
-2. **Update environment variables**:
+1. **Clone and configure**
    ```bash
-   # Add to your .env file
-   GROQ_MODEL=llama-3.3-70b-versatile
+   git clone <repository-url>
+   cd RAG-Based-Chatbot/Chatbot
+   cp .env.example .env
+   # Edit .env with your API keys
    ```
 
-## 📄 Output
+2. **Start services**
+   ```bash
+   docker-compose up -d
+   ```
 
-### Generated Files
+3. **Access the application**
+   - Streamlit app: `http://localhost:8501`
+   - OLLAMA API: `http://localhost:11434`
 
-- **PDF Report**: `daily_summary_YYYYMMDD.pdf`
-  - English summary with market analysis
-  - Translated versions in Arabic, Hindi, Hebrew
-  - Embedded financial charts and images
-  - Professional formatting
+### Manual Docker Build
 
-### Sample Output Structure
+```bash
+# Build the image
+docker build -t verdictai .
 
-```
-daily_summary_20241201.pdf
-├── English Summary
-│   ├── Key market movements
-│   ├── Trading activity highlights
-│   └── Market drivers analysis
-├── Arabic Summary (العربية)
-├── Hindi Summary (हिन्दी)
-├── Hebrew Summary (עברית)
-└── Financial Charts & Images
+# Run the container
+docker run -p 8501:8501 --env-file .env verdictai
 ```
 
-### Telegram Distribution
+### Docker Services
 
-When configured, reports are automatically sent to your Telegram channel with:
-- PDF attachment
-- Descriptive caption
-- Date stamp
-- Delivery confirmation
+- **Streamlit App**: Web interface on port 8501
+- **OLLAMA**: Local LLM service on port 11434
+- **Volume Mounts**: Persistent data storage for vector databases
 
 ## 🔧 Customization
 
-### Adding New Languages
+### Adding New Legal Documents
 
-To add support for additional languages:
+1. **Add PDF files** to `tools/data/` directory
+2. **Create new query functions** in `tools/pdf_query_tools.py`
+3. **Update agent tools** in `agent.py`
+4. **Rebuild vector database** by running the application
 
-1. Update the `LANGUAGE_CODES` dictionary:
-```python
-LANGUAGE_CODES = {
-    "arabic": "ar", 
-    "hindi": "hi", 
-    "hebrew": "he",
-    "spanish": "es",  # Add new language
-    "french": "fr"    # Add new language
-}
-```
+### Modifying LLM Behavior
 
-2. Modify the translation loop in `crewai_flow_run()`:
-```python
-for lang in ["arabic", "hindi", "hebrew", "spanish", "french"]:
-    translations[lang] = translating_agent_translate(summary_en, lang)
-```
+1. **Adjust temperature** in `agent.py`:
+   ```python
+   LLM = ChatGroq(
+       model="llama-3.3-70b-versatile",
+       temperature=0.1,  # Lower = more focused, Higher = more creative
+   )
+   ```
 
-### Customizing Search Queries
+2. **Change prompt templates** in `tools/react_prompt_template.py`
 
-Modify the search query in `search_agent_us_financial_news()`:
+3. **Modify system prompts** in `tools/pdf_query_tools.py`
 
-```python
-query = "Your custom financial news query"
-```
+### Performance Tuning
 
-### PDF Layout Customization
-
-Adjust the PDF generation in `create_pdf()`:
-- Change page size and margins
-- Modify font styles and sizes
-- Adjust image placement and sizing
-- Customize section headers
+- **Adjust chunk sizes** in `pdf_query_tools.py`
+- **Modify retrieval parameters** (k=4 for number of documents)
+- **Optimize timeout values** for your network conditions
 
 ## 🐛 Troubleshooting
 
@@ -307,91 +268,107 @@ Adjust the PDF generation in `create_pdf()`:
 
 1. **Groq Model Decommissioned Error**
    ```
-   Error: The model `llama3-8b-8192` has been decommissioned
+   Error: The model has been decommissioned
    ```
-   **Solution**: Update to a current model:
+   **Solution**: Update to current model in `agent.py`:
    ```python
-   # In agent.py, change:
-   LLM = ChatGroq(model="llama-3.3-70b-versatile")  # or mixtral-8x7b-32768
+   LLM = ChatGroq(model="llama-3.3-70b-versatile")
    ```
 
-2. **API Key Errors**
-   - Verify all API keys are correctly set
-   - Check API quotas and billing status
-   - Ensure proper environment variable loading
+2. **OLLAMA Connection Failed**
+   ```
+   Error: Could not connect to OLLAMA
+   ```
+   **Solution**: 
+   - Start OLLAMA: `ollama serve`
+   - Check if models are installed: `ollama list`
+   - Pull required model: `ollama pull llama3.1:8b`
 
-3. **Search Failures**
-   - The system automatically falls back between Serper and Tavily
-   - Check internet connectivity
-   - Verify search API endpoints are accessible
+3. **Vector Database Not Found**
+   ```
+   Error: FAISS index not found
+   ```
+   **Solution**: The app will automatically create the vector database on first run
 
-4. **LLM Errors**
-   - Confirm Groq API key is valid
-   - Check model availability and pricing
-   - Verify API rate limits (14,400 requests/day free tier)
+4. **API Rate Limits**
+   ```
+   Error: Rate limit exceeded
+   ```
+   **Solution**: 
+   - Switch to OLLAMA for local processing
+   - Wait for rate limit reset
+   - Upgrade Groq plan if needed
 
-5. **PDF Generation Issues**
-   - Ensure sufficient disk space
-   - Check image URL accessibility
-   - Verify PIL/Pillow installation
-
-6. **Telegram Delivery**
-   - Verify bot token and channel ID
-   - Check bot permissions in the channel
-   - Ensure file size limits are respected
+5. **Memory Issues**
+   ```
+   Error: Out of memory
+   ```
+   **Solution**:
+   - Reduce chunk size in `pdf_query_tools.py`
+   - Use smaller OLLAMA models
+   - Increase system RAM
 
 ### Debug Mode
 
-Enable detailed logging:
-
+Enable verbose logging:
 ```python
-import logging
-logging.basicConfig(level=logging.DEBUG)
+# In agent.py, set verbose=True
+agent_executor = AgentExecutor(
+    verbose=True,  # Enable detailed logging
+    # ... other parameters
+)
 ```
 
-### Performance Optimization
+### Performance Issues
 
-- **Use Groq's fastest models** for real-time applications
-- **Batch requests** when possible to maximize throughput
-- **Monitor API usage** to stay within free tier limits
-- **Cache results** for repeated queries
+- **Slow responses**: Check internet connection and API status
+- **High memory usage**: Reduce chunk sizes or use smaller models
+- **Long startup time**: Vector database creation is one-time only
 
-## 📊 Performance
+## 📊 Performance Metrics
 
-### Typical Runtime (with Groq)
+### Typical Response Times
 
-- **Search Phase**: 10-30 seconds
-- **Summary Generation**: 5-15 seconds (Groq's speed advantage)
-- **Translation**: 15-45 seconds (3 languages, Groq accelerated)
-- **PDF Creation**: 5-15 seconds
-- **Telegram Upload**: 5-20 seconds
-
-**Total Runtime**: 40 seconds - 2.5 minutes (significantly faster with Groq)
+- **Groq (Cloud)**: 2-5 seconds
+- **OLLAMA (Local)**: 5-15 seconds
+- **Vector Search**: <1 second
+- **PDF Processing**: 10-30 seconds (first run only)
 
 ### Resource Usage
 
-- **Memory**: ~100-200MB peak usage
-- **Network**: ~10-50MB data transfer
-- **Storage**: ~1-5MB per generated PDF
-- **API Calls**: ~10-20 Groq requests per run
+- **Memory**: 200-500MB (depending on model)
+- **Storage**: ~100MB for vector databases
+- **Network**: Minimal (except for Groq API calls)
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our contributing guidelines:
+We welcome contributions! Please follow these steps:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+1. **Fork the repository**
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Make your changes**
+4. **Add tests** (if applicable)
+5. **Submit a pull request**
 
 ### Development Setup
 
 ```bash
-git clone <repository-url>
-cd CrewAI-Financial-Daily-Summary
+# Clone your fork
+git clone https://github.com/yourusername/RAG-Based-Chatbot.git
+cd RAG-Based-Chatbot/Chatbot
+
+# Install development dependencies
 pip install -r requirements.txt
 pip install -r requirements-dev.txt  # If available
+
+# Run tests
+python -m pytest tests/
+
+# Run linting
+flake8 .
 ```
 
 ## 📝 License
@@ -400,21 +377,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Groq](https://groq.com) for providing ultra-fast Language Processing Units
-- [CrewAI](https://github.com/joaomdmoura/crewAI) for the agent workflow inspiration
-- [LiteLLM](https://github.com/BerriAI/litellm) for LLM abstraction
-- [Serper](https://serper.dev) and [Tavily](https://tavily.com) for search capabilities
-- [ReportLab](https://www.reportlab.com) for PDF generation
+- [LangChain](https://github.com/langchain-ai/langchain) for the agent framework
+- [Groq](https://groq.com) for high-speed LLM inference
+- [OLLAMA](https://ollama.ai) for local LLM deployment
+- [Streamlit](https://streamlit.io) for the web interface
+- [FAISS](https://github.com/facebookresearch/faiss) for vector search
+- [HuggingFace](https://huggingface.co) for embedding models
 
 ## 📞 Support
 
 For support and questions:
 
-- Create an issue in the repository
-- Check the troubleshooting section
-- Review [Groq's documentation](https://console.groq.com/docs)
-- Review API documentation for external services
+- **Create an issue** in the repository
+- **Check the troubleshooting section** above
+- **Review API documentation** for external services
+- **Join our community** discussions
+
+## 🔮 Future Enhancements
+
+- [ ] Support for more legal documents (Supreme Court judgments, Acts)
+- [ ] Multi-language support (Hindi, regional languages)
+- [ ] Voice input/output capabilities
+- [ ] Advanced legal citation formatting
+- [ ] Integration with legal databases
+- [ ] Mobile app development
+- [ ] Advanced analytics and usage tracking
 
 ---
 
-**Note**: This implementation is optimized for Groq's high-speed processing. You must configure your own API keys and may need to adapt the code for your specific requirements. The deprecated `llama3-8b-8192` model should be replaced with current Groq models for optimal performance.
+**Note**: This is a legal information tool and should not be considered as professional legal advice. Always consult with qualified legal professionals for important legal matters.
+
+**Made with ❤️ for the Indian legal community**
