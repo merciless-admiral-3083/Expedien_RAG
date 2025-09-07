@@ -36,15 +36,25 @@ def agent(query: str, use_ollama: bool = False, ollama_model: str = "llama3.1:8b
     else:
         os.environ["USE_OLLAMA"] = "false"
         # Use Groq for cloud LLM
-        LLM = ChatGroq(model="llama3-8b-8192")
-        print("Using Groq model: llama3-8b-8192")
+        LLM = ChatGroq(
+            model="llama-3.3-70b-versatile",
+            temperature=0.1,
+            timeout=30,  # Add timeout for Groq
+            max_tokens=1000  # Limit response length
+        )
+        print("Using Groq model: llama-3.3-70b-versatile")
 
-    from tools.pdf_query_tools import (
-    indian_constitution_pdf_query_with_qa,
-    indian_laws_pdf_query_with_qa,
-    )
-
-    tools = [indian_constitution_pdf_query_with_qa, indian_laws_pdf_query_with_qa]
+    # Import tools with error handling
+    try:
+        from tools.pdf_query_tools import (
+            indian_constitution_pdf_query_with_qa,
+            indian_laws_pdf_query_with_qa,
+        )
+        tools = [indian_constitution_pdf_query_with_qa, indian_laws_pdf_query_with_qa]
+    except ImportError as e:
+        print(f"Warning: Could not import QA tools: {e}")
+        # Fallback to basic tools
+        tools = [indian_constitution_pdf_query, indian_laws_pdf_query]
 
     prompt_template = get_prompt_template()
 
@@ -57,10 +67,12 @@ def agent(query: str, use_ollama: bool = False, ollama_model: str = "llama3.1:8b
     agent_executor = AgentExecutor(
         agent=agent, 
         tools=tools, 
-        verbose=False, 
+        verbose=True,  # Enable verbose for debugging
         handle_parsing_errors=True,
-        max_iterations=10,  # Limit iterations for local models
-        early_stopping_method="generate"
+        max_iterations=5,  # Reduce iterations to prevent infinite loops
+        early_stopping_method="generate",
+        max_execution_time=60,  # Add 60-second timeout
+        return_intermediate_steps=True
     )
 
     try:
@@ -69,7 +81,15 @@ def agent(query: str, use_ollama: bool = False, ollama_model: str = "llama3.1:8b
     except Exception as e:
         error_msg = f"Error processing query: {str(e)}"
         print(error_msg)
-        return f"Sorry, I encountered an error while processing your query: {str(e)}"
+        
+        # Fallback: try simple LLM call without tools
+        try:
+            print("Attempting fallback with simple LLM call...")
+            simple_response = LLM.invoke(f"Answer this legal question about Indian law: {query}")
+            return simple_response.content
+        except Exception as fallback_error:
+            print(f"Fallback also failed: {fallback_error}")
+            return f"Sorry, I encountered an error while processing your query: {str(e)}. Please try rephrasing your question or check your internet connection."
 
 
 def get_available_ollama_models():

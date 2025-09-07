@@ -4,7 +4,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain.chains.question_answering import load_qa_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langchain_ollama import ChatOllama
 from langchain.embeddings import CacheBackedEmbeddings
@@ -26,7 +27,7 @@ def get_llm_model(use_ollama=False, ollama_model="llama3.1:8b"):
             timeout=120
         )
     else:
-        return ChatGroq(model="llama3-8b-8192")
+        return ChatGroq(model="llama3-70b-8192")
 
 
 def check_ollama_available():
@@ -170,10 +171,15 @@ def indian_constitution_pdf_query_with_qa(query: str) -> str:
     # Get relevant documents
     docs = db.similarity_search(query, k=4)
     
-    # Use QA chain for better answers
+    # Use modern QA chain for better answers
     try:
-        qa_chain = load_qa_chain(llm, chain_type="stuff")
-        result = qa_chain.run(input_documents=docs, question=query)
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful legal assistant. Use the following documents to answer the question about the Indian Constitution."),
+            ("human", "{question}")
+        ])
+        
+        qa_chain = create_stuff_documents_chain(llm, prompt)
+        result = qa_chain.invoke({"input_documents": docs, "question": query})
         return result
     except Exception as e:
         # Fallback to simple retrieval if QA chain fails
@@ -216,11 +222,16 @@ def indian_laws_pdf_query_with_qa(query: str) -> str:
     # Get relevant documents
     docs = db.similarity_search(query, k=4)
     
-    # Use QA chain for better answers
+    # Use modern QA chain for better answers
     try:
-        qa_chain = load_qa_chain(llm, chain_type="stuff")
-        result = qa_chain.run(input_documents=docs, question=query)
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful legal assistant. Use the following documents to answer the question about Indian laws (BNS - Bharatiya Nyaya Sanhita)."),
+            ("human", "{question}")
+        ])
+        
+        qa_chain = create_stuff_documents_chain(llm, prompt)
+        result = qa_chain.invoke({"input_documents": docs, "question": query})
         return result
     except Exception as e:
         # Fallback to simple retrieval if QA chain fails
-        return str(docs)
+        return "\n".join([d.page_content for d in docs])

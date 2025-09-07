@@ -72,7 +72,7 @@ with st.sidebar:
         st.write(f"**Model:** {selected_model}")
     else:
         st.write(f"**Provider:** Groq (Cloud)")
-        st.write(f"**Model:** llama3-8b-8192")
+        st.write(f"**Model:** llama-3.3-70b-versatile")
 
 # Main content
 initial_msg = """
