@@ -5,6 +5,12 @@ import streamlit as st
 from agent import agent, check_ollama_connection, get_available_ollama_models
 import streamlit as st
 
+st.set_page_config(
+    page_title="VerdictAI",
+    page_icon="⚖️",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 # Load environment variables
 try:
     # Try to get secrets from Streamlit Cloud
@@ -21,12 +27,7 @@ if GROQ_API_KEY:
     os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 # Configure Streamlit
-st.set_page_config(
-    page_title="VerdictAI",
-    page_icon="⚖️",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
+
 
 st.title("VerdictAI⚖️")
 
