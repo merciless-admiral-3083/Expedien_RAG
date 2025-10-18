@@ -1,4 +1,4 @@
-python_version >= "3.10"
+python_version >= "3.10":
 
 # Core
 streamlit==1.38.0
@@ -17,6 +17,8 @@ langchain-groq==0.2.0
 langchain-huggingface==0.1.0
 langchain-text-splitters==0.3.0
 langsmith==0.1.125
+langchain-ollama==0.1.1
+
 
 # HuggingFace & APIs
 huggingface-hub==0.25.0
@@ -43,3 +45,4 @@ protobuf==5.28.2
 # Optional (safe)
 tiktoken==0.7.0
 tokenizers==0.19.1
+pip>=23.2
