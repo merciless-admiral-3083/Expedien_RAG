@@ -3,20 +3,22 @@ import os
 from dotenv import dotenv_values
 import streamlit as st
 from agent import agent, check_ollama_connection, get_available_ollama_models
+import streamlit as st
 
 # Load environment variables
 try:
-    ENVs = dotenv_values(".env")  # for dev env
-    GROQ_API_KEY = ENVs.get("GROQ_API_KEY", "")
-except:
-    ENVs = st.secrets  # for streamlit deployment
-    GROQ_API_KEY = ENVs.get("GROQ_API_KEY", "")
+    # Try to get secrets from Streamlit Cloud
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+    HUGGINGFACE_API_KEY = st.secrets.get("HUGGINGFACE_API_KEY", "")
+except Exception:
+    # Fallback to .env locally
+    envs = dotenv_values(".env")
+    GROQ_API_KEY = envs.get("GROQ_API_KEY", "")
+    HUGGINGFACE_API_KEY = envs.get("HUGGINGFACE_API_KEY", "")
 
 # Set environment variables
 if GROQ_API_KEY:
     os.environ["GROQ_API_KEY"] = GROQ_API_KEY
-if ENVs.get("HUGGINGFACE_API_KEY"):
-    os.environ["HUGGINGFACE_API_KEY"] = ENVs["HUGGINGFACE_API_KEY"]
 
 # Configure Streamlit
 st.set_page_config(
