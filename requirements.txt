@@ -1,27 +1,23 @@
-# python_version >= "3.10":
-# Core
+# Streamlit core
 streamlit==1.38.0
-torch==2.2.2
-tiktoken==0.7.0
-tokenizers==0.19.1
-pip>=23.2
 
-# LangChain (compatible set)
+# Core LangChain packages (aligned)
 langchain==0.2.14
-langchain-community==0.2.11
 langchain-core==0.2.32
+langchain-community==0.2.11
+langchain-text-splitters==0.2.2
 langchain-groq==0.1.4
 langchain-huggingface==0.0.3
 langchain-ollama==0.1.1
-langchain-text-splitters==0.2.2
-langsmith==0.1.125
 
+# Torch (supports Python 3.13)
+torch==2.8.0+cpu
+torchvision==0.23.0+cpu
+torchaudio==2.8.0+cpu
+--index-url https://download.pytorch.org/whl/cpu
 
-# Common utilities
-faiss-cpu==1.9.0.post1
-sentence-transformers==3.1.1
-pandas==2.2.3
-numpy==1.26.4
-PyPDF2==3.0.1
-requests==2.32.3
-python-dotenv==1.0.1
+# Optional utilities
+python-dotenv
+requests
+numpy
+pandas
