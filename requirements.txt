@@ -3,7 +3,7 @@ huggingface-hub==0.25.0
 idna==3.10
 charset-normalizer==3.3.2
 PyYAML==6.0.2
-torch==2.4.1
+torch==2.5.1
 referencing==0.35.1
 regex==2024.9.11
 requests==2.32.3
